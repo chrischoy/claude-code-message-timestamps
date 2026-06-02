@@ -2,6 +2,10 @@
 
 **See the time on every message in Claude Code — and let Claude know it too.**
 
+![Demo: timestamps on each message, and Claude answering how long a task took](assets/demo.gif)
+
+<sub>Illustration of the plugin in action — each reply is prefixed with the local time, and Claude can reason about elapsed time.</sub>
+
 ```
 [09:12:54] Here's the plan: I'll start by …
 ```
