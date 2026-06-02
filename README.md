@@ -14,8 +14,14 @@ Claude Code doesn't show *when* anything happened. Long sessions blur together: 
 can't tell how long a build took, when you asked something, or point a teammate to
 "the part around 09:15." This plugin fixes that in two ways, and installs in 15 seconds.
 
-> This is the most-requested missing feature in Claude Code — see
-> [issue #2441](https://github.com/anthropics/claude-code/issues/2441) and friends.
+## Why this exists
+
+Timestamps are one of the most-requested missing features in Claude Code. At least
+**11 issues** ask for some form of it:
+
+[#2441](https://github.com/anthropics/claude-code/issues/2441) · [#60711](https://github.com/anthropics/claude-code/issues/60711) · [#44763](https://github.com/anthropics/claude-code/issues/44763) · [#30745](https://github.com/anthropics/claude-code/issues/30745) · [#21051](https://github.com/anthropics/claude-code/issues/21051) · [#63488](https://github.com/anthropics/claude-code/issues/63488) · [#61672](https://github.com/anthropics/claude-code/issues/61672) · [#52944](https://github.com/anthropics/claude-code/issues/52944) · [#56855](https://github.com/anthropics/claude-code/issues/56855) · [#49084](https://github.com/anthropics/claude-code/issues/49084) · [#60492](https://github.com/anthropics/claude-code/issues/60492)
+
+This plugin is a working solution today, while we wait to see if it ships natively.
 
 ---
 
