@@ -10,6 +10,5 @@
   "homepage": "https://github.com/zoharbabin/claude-code-message-timestamps",
   "repository": "https://github.com/zoharbabin/claude-code-message-timestamps",
   "license": "MIT",
-  "keywords": ["timestamps", "time", "clock", "hooks", "session-tracking", "productivity"],
-  "hooks": "./hooks/hooks.json"
+  "keywords": ["timestamps", "time", "clock", "hooks", "session-tracking", "productivity"]
 }
