@@ -1,0 +1,15 @@
+{
+  "name": "message-timestamps",
+  "displayName": "Message Timestamps",
+  "version": "1.1.0",
+  "description": "Shows the local time on every message and tells Claude when each prompt was sent — so you can scan a conversation, see how long things took, and reference earlier blocks.",
+  "author": {
+    "name": "Zohar Babin",
+    "url": "https://github.com/zoharbabin"
+  },
+  "homepage": "https://github.com/zoharbabin/claude-code-message-timestamps",
+  "repository": "https://github.com/zoharbabin/claude-code-message-timestamps",
+  "license": "MIT",
+  "keywords": ["timestamps", "time", "clock", "hooks", "session-tracking", "productivity"],
+  "hooks": "./hooks/hooks.json"
+}
