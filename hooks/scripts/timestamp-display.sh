@@ -20,7 +20,17 @@ set -euo pipefail
 # displays the original message text unchanged — never swallow assistant output.
 command -v jq >/dev/null 2>&1 || exit 0
 
-ts="$(date '+%H:%M:%S %Z')"
+# Honor CLAUDE_TIMESTAMPS_TZ (e.g. KST, MST, Asia/Seoul); unset = machine local.
+# The zone label is shown ONLY when a timezone is explicitly pinned; by default
+# the on-screen marker is bare time.
+source "$(dirname "${BASH_SOURCE[0]}")/lib/resolve-tz.sh"
+tz="$(resolve_tz)"
+if [ -n "$tz" ]; then
+  export TZ="$tz"
+  ts="$(date '+%H:%M:%S %Z')"
+else
+  ts="$(date '+%H:%M:%S')"
+fi
 jq --arg ts "$ts" '
   if .index == 0 then
     {hookSpecificOutput: {hookEventName: "MessageDisplay", displayContent: ("[" + $ts + "] " + .delta)}}
