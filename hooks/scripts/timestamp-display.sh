@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # MessageDisplay hook — user-facing, display-only.
 #
-# Prepends a local-time [HH:MM:SS] marker to each assistant message on screen.
+# Prepends a local-time [HH:MM:SS ZONE] marker to each assistant message on screen.
 # This is purely cosmetic: MessageDisplay never changes the transcript or what
 # Claude sees, so the marker cannot confuse the model.
 #
@@ -20,7 +20,7 @@ set -euo pipefail
 # displays the original message text unchanged — never swallow assistant output.
 command -v jq >/dev/null 2>&1 || exit 0
 
-ts="$(date '+%H:%M:%S')"
+ts="$(date '+%H:%M:%S %Z')"
 jq --arg ts "$ts" '
   if .index == 0 then
     {hookSpecificOutput: {hookEventName: "MessageDisplay", displayContent: ("[" + $ts + "] " + .delta)}}

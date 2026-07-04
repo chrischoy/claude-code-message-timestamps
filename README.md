@@ -7,7 +7,7 @@
 <sub>Illustration of the plugin in action — each reply is prefixed with the local time, and Claude can reason about elapsed time.</sub>
 
 ```
-[09:12:54] Here's the plan: I'll start by …
+[09:12:54 EDT] Here's the plan: I'll start by …
 ```
 
 Claude Code doesn't show *when* anything happened. Long sessions blur together: you
@@ -119,8 +119,8 @@ without Git Bash is **not** supported, because the hooks are Bash scripts.
 Each assistant reply is prefixed with the local time, once per message:
 
 ```
-[09:12:54] Sure — here's how that works …
-[09:13:48] Done. Tests pass.
+[09:12:54 EDT] Sure — here's how that works …
+[09:13:48 EDT] Done. Tests pass.
 ```
 
 The gap between two stamps tells you how long the work in between took.
@@ -132,7 +132,7 @@ The gap between two stamps tells you how long the work in between took.
 Three small [hooks](https://docs.claude.com/en/docs/claude-code/hooks), each on a
 different Claude Code event:
 
-1. **You see the time** (`MessageDisplay`) — prepends `[HH:MM:SS]` to each assistant
+1. **You see the time** (`MessageDisplay`) — prepends `[HH:MM:SS ZONE]` to each assistant
    message *on screen only*. It never touches the transcript or what Claude reads, so it
    can't confuse the model. It stamps just the first chunk of each streamed message, so
    you get exactly one timestamp per reply.
@@ -173,11 +173,13 @@ claude-code-message-timestamps/
 ## Customize
 
 The format lives in the scripts in `hooks/scripts/`. They use the standard `date`
-format string.
+format string. The on-screen marker is `+%H:%M:%S %Z`, where `%Z` is your local
+timezone abbreviation (e.g. `EDT`).
 
-- **Add the date too:** change `+%H:%M:%S` to `+%Y-%m-%d %H:%M:%S` in
+- **Drop the timezone:** change `+%H:%M:%S %Z` to `+%H:%M:%S` in
   `timestamp-display.sh`.
-- **12-hour clock:** use `+%I:%M:%S %p`.
+- **Add the date too:** use `+%Y-%m-%d %H:%M:%S %Z`.
+- **12-hour clock:** use `+%I:%M:%S %p %Z`.
 - **Different wording for Claude:** edit the `additionalContext` string in
   `timestamp-context.sh`.
 
