@@ -19,16 +19,9 @@ command -v jq >/dev/null 2>&1 || exit 0
 # Opt out of model-facing context injection (display-only mode).
 [ "${CLAUDE_TIMESTAMPS_INJECT_CONTEXT:-true}" = "false" ] && exit 0
 
-# Honor CLAUDE_TIMESTAMPS_TZ (e.g. KST, MST, Asia/Seoul); unset = machine local.
-# The zone label is shown ONLY when a timezone is explicitly pinned; by default
-# the marker is bare time (the system prompt already tells the model the date).
-source "$(dirname "${BASH_SOURCE[0]}")/lib/resolve-tz.sh"
-tz="$(resolve_tz)"
-if [ -n "$tz" ]; then
-  export TZ="$tz"
-  ts="$(date '+%H:%M:%S %Z')"
-else
-  ts="$(date '+%H:%M:%S')"
-fi
+# Build the timestamp, honoring CLAUDE_TIMESTAMPS_TZ (pin a zone) and
+# CLAUDE_TIMESTAMPS_FORMAT (custom `date` layout). Default is 'YY-MM-DD HH:MM:SS'.
+source "$(dirname "${BASH_SOURCE[0]}")/lib/timestamp.sh"
+ts="$(current_timestamp)"
 jq -n --arg ts "$ts" \
   '{hookSpecificOutput: {hookEventName: "UserPromptSubmit", additionalContext: ("Message sent at local time " + $ts)}}'

@@ -12,13 +12,13 @@ say ""
 sleep 0.5
 prompt "refactor the auth module and run the tests"
 sleep 0.8
-ts "09:12:54"; say "On it — I'll refactor \`auth.py\`, then run the suite."
+ts "26-07-05 09:12:54"; say "On it — I'll refactor \`auth.py\`, then run the suite."
 sleep 1.0
-ts "09:13:48"; say "${GREEN}Done.${RST} Refactor complete, 42 tests pass."
+ts "26-07-05 09:13:48"; say "${GREEN}Done.${RST} Refactor complete, 42 tests pass."
 sleep 0.9
 say ""
 prompt "how long did that whole thing take?"
 sleep 0.8
-ts "09:14:20"; say "About 90 seconds end to end — you sent the request at 09:12:50,"
+ts "26-07-05 09:14:20"; say "About 90 seconds end to end — you sent the request at 09:12:50,"
 say "         and the tests finished at 09:14:20."
 sleep 1.4

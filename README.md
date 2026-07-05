@@ -7,7 +7,7 @@
 <sub>Illustration of the plugin in action — each reply is prefixed with the local time, and Claude can reason about elapsed time.</sub>
 
 ```
-[09:12:54] Here's the plan: I'll start by …
+[26-07-05 09:12:54] Here's the plan: I'll start by …
 ```
 
 Claude Code doesn't show *when* anything happened. Long sessions blur together: you
@@ -119,8 +119,8 @@ without Git Bash is **not** supported, because the hooks are Bash scripts.
 Each assistant reply is prefixed with the local time, once per message:
 
 ```
-[09:12:54] Sure — here's how that works …
-[09:13:48] Done. Tests pass.
+[26-07-05 09:12:54] Sure — here's how that works …
+[26-07-05 09:13:48] Done. Tests pass.
 ```
 
 The gap between two stamps tells you how long the work in between took.
@@ -128,7 +128,7 @@ The gap between two stamps tells you how long the work in between took.
 Pin a timezone with `CLAUDE_TIMESTAMPS_TZ` and the zone label appears too:
 
 ```
-[22:12:54 KST] Sure — here's how that works …
+[26-07-05 22:12:54 KST] Sure — here's how that works …
 ```
 
 ---
@@ -138,14 +138,14 @@ Pin a timezone with `CLAUDE_TIMESTAMPS_TZ` and the zone label appears too:
 Three small [hooks](https://docs.claude.com/en/docs/claude-code/hooks), each on a
 different Claude Code event:
 
-1. **You see the time** (`MessageDisplay`) — prepends `[HH:MM:SS]` to each assistant
-   message *on screen only* (and `[HH:MM:SS ZONE]` when a timezone is pinned). It never
-   touches the transcript or what Claude reads, so it can't confuse the model. It stamps
-   just the first chunk of each streamed message, so you get exactly one timestamp per
-   reply.
+1. **You see the time** (`MessageDisplay`) — prepends `[YY-MM-DD HH:MM:SS]` to each
+   assistant message *on screen only* (and `[YY-MM-DD HH:MM:SS ZONE]` when a timezone is
+   pinned). It never touches the transcript or what Claude reads, so it can't confuse the
+   model. It stamps just the first chunk of each streamed message, so you get exactly one
+   timestamp per reply.
 
 2. **Claude knows the time** (`UserPromptSubmit`) — adds `Message sent at local time
-   09:12:54` to Claude's context when you send a prompt. Claude Code wraps this in a
+   26-07-05 09:12:54` to Claude's context when you send a prompt. Claude Code wraps this in a
    `<system-reminder>`, which the model is trained to treat as background metadata —
    *not* as text you typed. So Claude can answer "how long ago did I ask that?" without
    ever echoing or fixating on the clock.
@@ -173,6 +173,7 @@ claude-code-message-timestamps/
 │       ├── timestamp-display.sh   # MessageDisplay → shows you the time
 │       ├── dependency-check.sh    # SessionStart → warns once if jq is missing
 │       └── lib/
+│           ├── timestamp.sh       # builds the timestamp (TZ + format aware)
 │           └── resolve-tz.sh      # maps CLAUDE_TIMESTAMPS_TZ → IANA zone
 └── README.md
 ```
@@ -182,13 +183,13 @@ claude-code-message-timestamps/
 ## Customize
 
 **Pin a timezone (`CLAUDE_TIMESTAMPS_TZ`):** by default timestamps use your machine's
-local time and show **no zone label** (`[09:12:54]`). Set `CLAUDE_TIMESTAMPS_TZ` to
-render in a specific zone — and the label (`%Z`) then appears so it's clear which zone
+local time and show **no zone label** (`[26-07-05 09:12:54]`). Set `CLAUDE_TIMESTAMPS_TZ`
+to render in a specific zone — and the label (`%Z`) then appears so it's clear which zone
 you're reading:
 
 ```bash
-CLAUDE_TIMESTAMPS_TZ=KST claude          # → [22:12:54 KST]  (Asia/Seoul)
-CLAUDE_TIMESTAMPS_TZ=MST claude          # → [06:12:54 MDT]  (America/Denver, mountain time)
+CLAUDE_TIMESTAMPS_TZ=KST claude          # → [26-07-05 22:12:54 KST]  (Asia/Seoul)
+CLAUDE_TIMESTAMPS_TZ=MST claude          # → [26-07-05 06:12:54 MDT]  (America/Denver, mountain time)
 CLAUDE_TIMESTAMPS_TZ=Asia/Seoul claude   # any IANA zone name also works
 ```
 
@@ -200,14 +201,21 @@ works too. Zones observing daylight saving show the correct current abbreviation
 `MST` resolves to Mountain Time, which displays `MDT` while DST is in effect. An
 unrecognized value falls back to UTC.
 
-Beyond the timezone, the format lives in the scripts in `hooks/scripts/`, which use the
-standard `date` format string (the on-screen marker is `+%H:%M:%S`, plus ` %Z` when a
-zone is pinned):
+**Custom format (`CLAUDE_TIMESTAMPS_FORMAT`):** the default timestamp is
+`%y-%m-%d %H:%M:%S` (plus ` %Z` when a zone is pinned). Set `CLAUDE_TIMESTAMPS_FORMAT` to
+a [`date` format string](https://man7.org/linux/man-pages/man1/date.1.html) — the part
+after the `+` — to control the layout entirely:
 
-- **Always show the zone:** change `+%H:%M:%S` to `+%H:%M:%S %Z` in
-  `timestamp-display.sh` (or just set `CLAUDE_TIMESTAMPS_TZ`).
-- **Add the date too:** use `+%Y-%m-%d %H:%M:%S`.
-- **12-hour clock:** use `+%I:%M:%S %p`.
+```bash
+CLAUDE_TIMESTAMPS_FORMAT='%H:%M:%S'               claude   # → [15:34:47]  (time only)
+CLAUDE_TIMESTAMPS_FORMAT='%Y-%m-%d %H:%M:%S %Z'   claude   # 4-digit year + zone
+CLAUDE_TIMESTAMPS_FORMAT='%I:%M:%S %p'            claude   # 12-hour clock
+```
+
+You pick exactly which of date / time / zone appear (include `%Z` yourself if you want
+the zone). It composes with `CLAUDE_TIMESTAMPS_TZ`, so you can pin a zone *and* a format
+together. Both the on-screen marker and the model-facing context use the same format.
+
 - **Different wording for Claude:** edit the `additionalContext` string in
   `timestamp-context.sh`.
 
