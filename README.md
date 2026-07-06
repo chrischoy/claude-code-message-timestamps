@@ -201,6 +201,21 @@ works too. Zones observing daylight saving show the correct current abbreviation
 `MST` resolves to Mountain Time, which displays `MDT` while DST is in effect. An
 unrecognized value falls back to UTC.
 
+**Switch timezone mid-session (no restart):** the env var is read once when Claude Code
+launches, so it can't change during a session. For live switching, write the zone to
+`~/.claude/timestamps-tz` — the hooks re-read it on every message, so the change takes
+effect on your next reply:
+
+```bash
+echo MST > ~/.claude/timestamps-tz     # next message → Mountain Time
+echo KST > ~/.claude/timestamps-tz     # switch again, live
+rm ~/.claude/timestamps-tz             # back to machine local
+```
+
+It accepts the same abbreviations and IANA names as the env var. Precedence is
+**`CLAUDE_TIMESTAMPS_TZ` (if set at launch) → the file → machine local**, so an env var
+pin always wins. (Respects `CLAUDE_CONFIG_DIR` if you've relocated your Claude config.)
+
 **Custom format (`CLAUDE_TIMESTAMPS_FORMAT`):** the default timestamp is
 `%y-%m-%d %H:%M:%S` (plus ` %Z` when a zone is pinned). Set `CLAUDE_TIMESTAMPS_FORMAT` to
 a [`date` format string](https://man7.org/linux/man-pages/man1/date.1.html) — the part
